@@ -1,13 +1,27 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
+import { globalErrorHandler } from './middleware/globalErrorHandler';
+import notFound from './middleware/notFound';
+import sendResponse from './utils/sendResponse';
 
 const app: Application = express();
 
 // Middlewares
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: (origin, callback) => {
+      // Allow localhost:5173 and its subdomains
+      if (
+        !origin ||
+        origin === 'http://localhost:5173' ||
+        origin.includes('.localhost:5173')
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   }),
 );
@@ -18,27 +32,19 @@ app.use(express.json());
 //app.use('/api/auth', authRoutes);
 
 // Health Check
-
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'ok',
-    message: 'Server is running',
-  });
-});
-
-/* app.get('/', (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: '🌐 Server is live 🚀',
     data: null,
   });
-}); */
-
-// Global error handler
-//app.use(globalErrorHandler);
+});
 
 // Not Found handler
-//app.use(notFound);
+app.use(notFound);
+
+// Global error handler
+app.use(globalErrorHandler);
 
 export default app;
