@@ -16,10 +16,12 @@ const userSchema = new Schema<IUser, UserModel>(
       required: true,
       select: false,
     },
-    shopNames: [{
-      type: String,
-      required: true,
-    }],
+    shopNames: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
   },
   {
     timestamps: true,

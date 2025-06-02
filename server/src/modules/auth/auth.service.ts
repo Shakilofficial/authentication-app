@@ -1,18 +1,18 @@
-import { StatusCodes } from "http-status-codes";
-import mongoose from "mongoose";
-import { ApiError } from "../../utils/ApiError";
-import { IUser } from "../user/user.interface";
-import User from "../user/user.model";
-import { IAuth, IJwtPayload } from "./auth.interface";
-import config from "../../config";
-import { createToken } from "../../utils/jwt";
+import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
+import { ApiError } from '../../utils/ApiError';
+import { IUser } from '../user/user.interface';
+import User from '../user/user.model';
+import { IAuth, IJwtPayload } from './auth.interface';
+import config from '../../config';
+import { createToken } from '../../utils/jwt';
 
 const signUp = async (userData: IUser) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const { username, password, shopNames } = userData;
-    const isExist = await User.findByUsername(username)
+    const isExist = await User.findByUsername(username);
     if (isExist) {
       throw new ApiError(StatusCodes.CONFLICT, 'Username already exists');
     }
@@ -21,16 +21,25 @@ const signUp = async (userData: IUser) => {
     if (shopNames && shopNames.length > 0) {
       const existingShops = await User.find({ shopNames: { $in: shopNames } });
       if (existingShops.length > 0) {
-        throw new ApiError(StatusCodes.CONFLICT, 'One or more shop names are already taken');
+        throw new ApiError(
+          StatusCodes.CONFLICT,
+          'One or more shop names are already taken',
+        );
       }
     }
 
-    const user = await User.create([{ username, password, shopNames }], { session });
+    const user = await User.create([{ username, password, shopNames }], {
+      session,
+    });
     const jwtPayload: IJwtPayload = {
       userId: user[0]._id.toString(),
       username: user[0].username,
     };
-    const accessToken = createToken(jwtPayload, config.jwt_access_secret, config.jwt_access_expires_in);
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_access_secret,
+      config.jwt_access_expires_in,
+    );
 
     await session.commitTransaction();
     return { user: user[0], accessToken };
@@ -64,7 +73,10 @@ const signIn = async (userData: IAuth & { rememberMe?: boolean }) => {
     rememberMe ? '7d' : config.jwt_access_expires_in,
   );
 
-  return { accessToken, user: { _id: user._id, username: user.username, shops: user.shopNames } };
+  return {
+    accessToken,
+    user: { _id: user._id, username: user.username, shops: user.shopNames },
+  };
 };
 
 const getProfile = async (authUser: IJwtPayload) => {
@@ -74,8 +86,6 @@ const getProfile = async (authUser: IJwtPayload) => {
   }
   return user.populate('shops');
 };
-
-
 
 export const authService = {
   signUp,

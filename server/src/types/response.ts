@@ -12,5 +12,3 @@ export type TResponse<T> = {
   meta?: TMeta;
   data: T;
 };
-
-

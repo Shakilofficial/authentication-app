@@ -11,7 +11,6 @@ const app: Application = express();
 app.use(
   cors({
     origin: (origin, callback) => {
-   
       if (
         !origin ||
         origin === 'http://localhost:3000' ||

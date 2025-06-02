@@ -1,11 +1,11 @@
-import { StatusCodes } from "http-status-codes";
-import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
-import { authService } from "./auth.service";
-import config from "../../config";
+import { StatusCodes } from 'http-status-codes';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { authService } from './auth.service';
+import config from '../../config';
 
 const signUp = catchAsync(async (req, res) => {
-  const {accessToken,user} = await authService.signUp(req.body);
+  const { accessToken, user } = await authService.signUp(req.body);
   res.cookie('token', accessToken, {
     httpOnly: true,
     secure: config.node_env === 'production',
