@@ -11,8 +11,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "bun run --watch src/server.ts",
-  "build": "tsc",
-  "start": "node dist/server.js",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "build:clean": "rm -rf dist",
     "build:tsc": "tsc --project tsconfig.json",
     "deploy": "vercel --prod",
