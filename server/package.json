@@ -1,12 +1,12 @@
 {
   "name": "server",
-  "module": "index.ts",
+  "module": "server.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run --watch src/index.ts",
-    "start": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist",
+    "dev": "bun run --watch src/server.ts",
+    "start": "bun run src/server.ts",
+    "build": "bun build src/server.ts --outdir dist",
     "lint": "bunx eslint .",
     "lint:fix": "bunx eslint . --fix",
     "prettier": "bunx prettier --write \"src/**/*.{ts,js,json}\"",

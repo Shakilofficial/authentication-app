@@ -1,8 +1,8 @@
 type TMeta = {
-  limit?: number;
-  page?: number;
-  total?: number;
-  totalPage?: number;
+  limit: number;
+  page: number;
+  total: number;
+  totalPage: number;
 };
 
 export type TResponse<T> = {
@@ -10,5 +10,7 @@ export type TResponse<T> = {
   success: boolean;
   message?: string;
   meta?: TMeta;
-  data: T | T[] | null;
+  data: T;
 };
+
+
