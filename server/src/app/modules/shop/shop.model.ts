@@ -1,5 +1,5 @@
-import mongoose, { Schema } from 'mongoose';
-import { IShop, ShopModel } from './shop.interface';
+import mongoose, { Schema } from "mongoose";
+import { IShop, ShopModel } from "./shop.interface";
 
 const shopSchema = new Schema<IShop, ShopModel>(
   {
@@ -12,7 +12,7 @@ const shopSchema = new Schema<IShop, ShopModel>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
-export const Shop = mongoose.model<IShop, ShopModel>('Shop', shopSchema);
+export const Shop = mongoose.model<IShop, ShopModel>("Shop", shopSchema);

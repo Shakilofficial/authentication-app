@@ -1,17 +1,51 @@
-import app from './app';
-import config from './config';
-import { connectDB } from './config/db';
+import { Server } from "http";
+import app from "./app";
+import config from "./app/config";
+import { connectDB } from "./app/config/db";
 
-const start = async (): Promise<void> => {
+let server: Server | null = null;
+
+// Graceful shutdown
+function gracefulShutdown(signal: string) {
+  console.log(`Received ${signal}. Closing server...`);
+  if (server) {
+    server.close(() => {
+      console.log("Server closed gracefully");
+      process.exit(0);
+    });
+  } else {
+    process.exit(0);
+  }
+}
+
+// Application bootstrap
+async function bootstrap() {
   try {
     await connectDB();
-    app.listen(config.port, () => {
-      console.log(`🚀 Server is running on port ${config.port} 🏃🏽‍♂️➡️`);
+
+    server = app.listen(config.port, () => {
+      console.log(`🚀 Application is running on port ${config.port}`);
+    });
+
+    // Listen for termination signals
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
+    // Error handling
+    process.on("uncaughtException", (error) => {
+      console.error("Uncaught Exception:", error);
+      gracefulShutdown("uncaughtException");
+    });
+
+    process.on("unhandledRejection", (error) => {
+      console.error("Unhandled Rejection:", error);
+      gracefulShutdown("unhandledRejection");
     });
   } catch (error) {
-    console.error('🚨 Failed to start the server ❌', error);
+    console.error("Error during bootstrap:", error);
     process.exit(1);
   }
-};
+}
 
-start();
+// Start the application
+bootstrap();

@@ -1,11 +1,11 @@
-import { StatusCodes } from 'http-status-codes';
-import mongoose from 'mongoose';
-import { ApiError } from '../../utils/ApiError';
-import { IUser } from '../user/user.interface';
-import User from '../user/user.model';
-import { IAuth, IJwtPayload } from './auth.interface';
-import config from '../../config';
-import { createToken } from '../../utils/jwt';
+import { StatusCodes } from "http-status-codes";
+import mongoose from "mongoose";
+import config from "../../config";
+import { ApiError } from "../../utils/ApiError";
+import { createToken } from "../../utils/jwt";
+import { IUser } from "../user/user.interface";
+import User from "../user/user.model";
+import { IAuth, IJwtPayload } from "./auth.interface";
 
 const signUp = async (userData: IUser) => {
   const session = await mongoose.startSession();
@@ -14,7 +14,7 @@ const signUp = async (userData: IUser) => {
     const { username, password, shopNames } = userData;
     const isExist = await User.findByUsername(username);
     if (isExist) {
-      throw new ApiError(StatusCodes.CONFLICT, 'Username already exists');
+      throw new ApiError(StatusCodes.CONFLICT, "Username already exists");
     }
 
     // Validate unique shop names
@@ -23,7 +23,7 @@ const signUp = async (userData: IUser) => {
       if (existingShops.length > 0) {
         throw new ApiError(
           StatusCodes.CONFLICT,
-          'One or more shop names are already taken',
+          "One or more shop names are already taken"
         );
       }
     }
@@ -38,7 +38,7 @@ const signUp = async (userData: IUser) => {
     const accessToken = createToken(
       jwtPayload,
       config.jwt_access_secret,
-      config.jwt_access_expires_in,
+      config.jwt_access_expires_in
     );
 
     await session.commitTransaction();
@@ -55,12 +55,12 @@ const signIn = async (userData: IAuth & { rememberMe?: boolean }) => {
   const { username, password, rememberMe } = userData;
   const user = await User.findByUsername(username);
   if (!user) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
   }
 
   const isPasswordValid = await User.isPasswordMatched(password, user.password);
   if (!isPasswordValid) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid credentials');
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid credentials");
   }
 
   const jwtPayload: IJwtPayload = {
@@ -70,7 +70,7 @@ const signIn = async (userData: IAuth & { rememberMe?: boolean }) => {
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret,
-    rememberMe ? '7d' : config.jwt_access_expires_in,
+    rememberMe ? "7d" : config.jwt_access_expires_in
   );
 
   return {
@@ -82,9 +82,9 @@ const signIn = async (userData: IAuth & { rememberMe?: boolean }) => {
 const getProfile = async (authUser: IJwtPayload) => {
   const user = await User.checkUserExist(authUser.userId);
   if (!user) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
   }
-  return user.populate('shops');
+  return user;
 };
 
 export const authService = {
