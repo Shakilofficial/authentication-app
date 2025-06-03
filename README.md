@@ -30,8 +30,8 @@ Follow these steps to set up and run the project locally.
 ### 📦 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/authify.git
-cd authify
+git clone https://github.com/Shakilofficial/authentication-app.git
+cd authentication-app
 ```
 
 ---
