@@ -6,8 +6,8 @@ import { IJwtPayload } from "./auth.interface";
 import { authService } from "./auth.service";
 
 const signUp = catchAsync(async (req, res) => {
-  const { accessToken, user } = await authService.signUp(req.body);
-  res.cookie("token", accessToken, {
+  const { accessToken, refreshToken } = await authService.signUp(req.body);
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: config.node_env === "production",
     sameSite: "strict",
@@ -17,23 +17,39 @@ const signUp = catchAsync(async (req, res) => {
     statusCode: StatusCodes.CREATED,
     success: true,
     message: "User created successfully!",
-    data: user,
+    data: {
+      accessToken,
+    },
   });
 });
 
 const signIn = catchAsync(async (req, res) => {
-  const { accessToken, user } = await authService.signIn(req.body);
-  res.cookie("token", accessToken, {
+  const { accessToken, refreshToken } = await authService.signIn(req.body);
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: config.node_env === "production",
-    sameSite: "strict",
+    sameSite: "none",
     maxAge: req.body.rememberMe ? 7 * 24 * 60 * 60 * 1000 : 30 * 60 * 1000,
   });
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: "User signed in successfully!",
-    data: user,
+    data: {
+      accessToken,
+    },
+  });
+});
+
+const refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+  const result = await authService.refreshToken(refreshToken);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Token refreshed successfully!",
+    data: result,
   });
 });
 
@@ -50,5 +66,6 @@ const getProfile = catchAsync(async (req, res) => {
 export const authController = {
   signUp,
   signIn,
+  refreshToken,
   getProfile,
 };
