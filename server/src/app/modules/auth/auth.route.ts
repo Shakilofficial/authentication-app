@@ -18,6 +18,8 @@ router.post(
   authController.signIn
 );
 
+router.post("/refresh", auth, authController.signIn);
+
 router.get("/profile", auth, authController.getProfile);
 
 export const authRoute = router;
