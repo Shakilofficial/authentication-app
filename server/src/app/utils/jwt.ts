@@ -5,14 +5,12 @@ export const createToken = (
   jwtPayload: IJwtPayload,
   secret: Secret,
   expiresIn: string
-): string => {
-  return jwt.sign(jwtPayload, secret, { expiresIn } as SignOptions);
+) => {
+  return jwt.sign(jwtPayload, secret, {
+    expiresIn,
+  } as SignOptions);
 };
 
 export const verifyToken = (token: string, secret: Secret) => {
-  if (!secret) {
-    throw new Error("JWT secret is required");
-  }
-
   return jwt.verify(token, secret) as JwtPayload;
 };
